@@ -129,7 +129,7 @@ function Scanner(options) {
         _.each(list, function(info) {
             var ip = info.ip;
 	    if (info.stats){
-	      var hash = ((info.stats.my_hash_rates_in_last_hour.actual/1000000).toFixed(3)||0);
+	      var hash = ((info.stats.my_hash_rates_in_last_hour.nonstale/1000000).toFixed(3)||0);
 	      var uptime = info.stats ? (info.stats.uptime / 60 / 60 / 24).toFixed(1) : "N/A";
 	    }
 	    var fee = (info.fee || 0).toFixed(2);
@@ -307,7 +307,7 @@ function Scanner(options) {
 			      update_addrs_list(peers);
 			      digest_local_stats(info, function(err, stats) {
 				  if(!err){
-				  //  console.log("localstats ",info.ip);
+				    //console.log("localstats ",info.ip);
 				      info.stats = stats;
 				      digest_global_stats(info, function(err, stats) {
 				      if(!err){
