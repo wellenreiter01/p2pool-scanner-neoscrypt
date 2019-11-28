@@ -14,6 +14,7 @@ function Geo(options1) {
             var result = '';
             res.on('data', function (data) {
                 result += data;
+		 //   console.log("data: "+data);
             });
 
             res.on('end', function () {
@@ -42,11 +43,12 @@ function Geo(options1) {
         // please change this!
       
         html = html.replace(/[\r\n\t]/g, "");
-        var b = html.match(/Country:<\/span>.{1,80}<\/span>/g);
+        var b = html.match(/<CountryName>.*<\/CountryName>/g);
+
         var c = b[0].match(/src=\".*\>/g);
-	var img = "http://www.geoiptool.com/" +String(c).substring(8, String(c).indexOf("gif")+3);
+	var img = " "
         var d = String(b);
-        var country = d.substring(d.indexOf("gif")+5,d.indexOf("/span>,")-1);
+        var country = d.substring(d.indexOf("Name>")+5,d.indexOf("<\/Country"))
         
         var o = {
             country : country,
@@ -58,11 +60,11 @@ function Geo(options1) {
 
     self.get = function(ip, callback) {
 
-        // console.log("QUERYING IP:",ip);
+         console.log("QUERYING IP:",ip);
         var options = {
-            host : 'www.geoiptool.com',
+            host : 'www.freegeoip.app',
             port : 443,
-            path: '/en/?IP='+ip,
+            path: '/xml/'+ip,
             method: 'GET'
 	}
         

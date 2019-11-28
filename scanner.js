@@ -112,11 +112,15 @@ function Scanner(options) {
 	
         if(logo)
             str += "<div style='float:left;margin-left:150px;margin-top:16px;'><img src=\""+logo+"\" /></div>"; //<br style='clear:both;'/>";
+        // the Headlines
+        str += "<DIV>"
         str += "<center><a href='https://github.com/forrestv/p2pool' target='_blank'>PEER TO PEER "+(config.currency.toUpperCase())+" MINING NETWORK</a> - PUBLIC NODE LIST<br/><span style='font-size:10px;color:#333;'>GENERATED ON: "+(new Date())+"</span></center><p/>"
         if(self.poolstats)
 	    pool_hash = (self.poolstats.pool_hash_rate/1000000).toFixed(2);
             str += "<center>Pool speed: "+pool_hash+" "+config.speed_abbrev+"</center>";
         str += "<center>Currently observing "+(self.nodes_total || "N/A")+" nodes.<br/>"+_.size(self.addr_working)+" nodes are public with following IPs:</center><p/>";
+        str += "<DIV>"
+        //The table
         str += "<div class='p2p'>";
         str += "<div class='p2p-row p2p-caption'><div class='p2p-ip'>IPs</div><div class='p2p-fee'>Fee</div><div class='p2p-hash'>Hashrate</div><div class='p2p-uptime'>Uptime</div><div class='p2p-geo'>Location</div>";
         str += "</div><br style='clear:both;'/>";
@@ -127,37 +131,38 @@ function Scanner(options) {
 	ipdata +="[";
         var row = 0;
         _.each(list, function(info) {
-            var ip = info.ip;
-	    if (info.stats){
-	      var hash = ((info.stats.my_hash_rates_in_last_hour.nonstale/1000000).toFixed(3)||0);
-	      var uptime = info.stats ? (info.stats.uptime / 60 / 60 / 24).toFixed(1) : "N/A";
-	    }
-	    var fee = (info.fee || 0).toFixed(2);
-	    if (!info.domain) { info.domain=info.ip;}
-	    if (pool_hash >0) {
-	
-		if(hash/pool_hash > 0.02) {
-		    data += (100*hash/pool_hash).toFixed(2)+", ";
-		        ipdata +="'"+ info.domain+":"+config.worker_port+"',";
-	//		console.log(ipdata);
-			
+		if(info.ip){
+	            var ip = info.ip;
+		    if (info.stats){
+		      var hash = ((info.stats.my_hash_rates_in_last_hour.nonstale/1000000).toFixed(3)||0);
+		      var uptime = info.stats ? (info.stats.uptime / 60 / 60 / 24).toFixed(1) : "N/A";
+		    }
+		    var fee = (info.fee || 0).toFixed(2);
+		    if (!info.domain) { info.domain=info.ip;}
+		    if (pool_hash >0) {
+		
+			if(hash/pool_hash > 0.02) {
+			    data += (100*hash/pool_hash).toFixed(2)+", ";
+			        ipdata +="'"+ info.domain+":"+config.worker_port+"',";
+		//		console.log(ipdata);
+				
+			}
+			else {
+			  if ( hash > 0 ) {
+			    other=parseInt(other)+parseInt((100*hash/pool_hash).toFixed(2));
+			  }
+			}
+		    
+       	     str += "<div class='p2p-row "+(row++ & 1 ? "row-grey" : "")+"'><div class='p2p-ip'><a href='http://"+ip+":"+config.worker_port+"/static/' target='_blank'>"+info.domain.toString().substr(0,25)+"</a></div><div class='p2p-fee'>"+info.fee+"%</div><div class='p2p-hash'>"+hash+"</div><div class='p2p-uptime'>"+uptime+" days</div>";
+       		     str += "<div class='p2p-geo'>\n";
+       		     if(info.geo) {
+       		        str += "<a href='http://www.geoiptool.com/en/?IP="+info.ip+"' target='_blank'>"+info.geo.country+" "+"<img src='"+info.geo.img+"' align='absmiddle' border='0'/></a>";
+       		    	 }
+          		str += "</div>\n";	//p2p-geo   
+           		str += "</div>\n"; //p2p-row
+           	 	str += "<br style='clear:both;'/>";
+	    		}
 		}
-		else {
-		  if ( hash > 0 ) {
-		    other=parseInt(other)+parseInt((100*hash/pool_hash).toFixed(2));
-		  }
-		}
-	   
-            str += "<div class='p2p-row "+(row++ & 1 ? "row-grey" : "")+"'><div class='p2p-ip'><a href='http://"+ip+":"+config.worker_port+"/static/' target='_blank'>"+info.domain.toString().substr(0,25)+"</a></div><div class='p2p-fee'>"+info.fee+"%</div><div class='p2p-hash'>"+hash+"</div><div class='p2p-uptime'>"+uptime+" days</div>";
-            str += "<div class='p2p-geo'>\n";
-            if(info.geo) {
-                str += "<a href='http://www.geoiptool.com/en/?IP="+info.ip+"' target='_blank'>"+info.geo.country+" "+"<img src='"+info.geo.img+"' align='absmiddle' border='0'/></a>";
-            }
-            str += "</div>\n";	//p2p-geo   
-            str += "</div>\n"; //p2p-row
-	   
-            str += "<br style='clear:both;'/>";
-	    }
         })
 	 data += other+"]";
 	 ipdata+= "'small nodes']";
